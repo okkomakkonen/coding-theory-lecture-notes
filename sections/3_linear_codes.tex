@@ -1,0 +1,216 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+
+\begin{document}
+
+\section{Linear codes}
+
+In coding theory we are interested in vector spaces, since a vector space can be described just with the basis, making it much more efficient compared to an arbitrary set with no structure\footnote{In addition to vector spaces over a finite field, we may define codes that are modules over a finite ring.}. The main reference for this section is \cite[Chapter 4]{ling2004coding}.
+
+We write vectors in $\F_q^k$ as row vectors. If $G$ is a $k \times n$ matrix in $\F_q^{k \times n}$ and $x \in \F_q^k$ is a vector, then we write vector-matrix multiplication as $xG \in \F_q^n$. This is a common notation in coding theory as we can see $k \times n$ matrices as linear maps from $k$ dimensions to $n$ dimensions. The $i$th coordinate of the vector $x \in \F_q^k$ is denoted by $x_i$ for $i \in [k] = \{1, \dots, k\}$.
+
+\begin{example}
+Over small finite fields we sometimes write vectors by concatenating the coordinates. In the binary field for example, $000 = (0, 0, 0) \in \F_2^3$ or $111011 = (1, 1, 1, 0, 1, 1) \in \F_2^6$.
+\end{example}
+
+\subsection{Vector spaces}
+
+Let $\F_q$ be a finite field with $q$ elements and let $V \subseteq \F_q^n$ be a $k$-dimensional vector space over $\F_q$ (here $0 \leq k \leq n$). This means that there exists a basis $\{v_1, \dots, v_k\}$ of linearly independent vectors that span $V$. Any vector $x \in V$ can be described uniquely by the coordinates $\alpha_1, \dots, \alpha_k \in \F_q$ as
+\begin{align*}
+    x = \alpha_1 v_1 + \dots + \alpha_k v_k.
+\end{align*}
+Therefore, $V$ contains $\lvert V \rvert = q^k$ vectors corresponding to all elements in $\F_q^k$.
+
+In addition to a basis, we can describe a vector space as the kernel of a linear map, \ie, the set of elements satisfying some linear constraints. Let $\varphi \colon \F_q^n \to \F_q^m$ be a linear map between vector spaces. Then, $V = \ker(\varphi) \subseteq \F_q^n$ is a vector space. In fact, every subspace of $\F_q^n$ can be described in this way. Let $V \subseteq \F_q^n$ be a subspace and $V'$ a complementary subspace such that $V \oplus V' = \F_q^n$. If $\varphi \colon \F_q^n \to \F_q^n$ is the projection onto $V'$, then $\ker(\varphi) = V$.
+
+Let $x, y \in \F_q^n$ be two vectors. Then we can define the \emph{scalar product} (\emph{dot product}) as
+\begin{equation*}
+    x \cdot y = xy^T = x_1y_1 + \dots + x_ny_n.
+\end{equation*}
+The vectors $x$ and $y$ are said to be \emph{orthogonal} if $x \cdot y = 0$. For a set $S \subseteq \F_q^n$ we define the \emph{orthogonal complement} as
+\begin{equation*}
+    S^\perp = \{x \in \F_q^n \mid x \cdot s = 0 \text{ for all $s \in S$}\}.
+\end{equation*}
+A simple computation shows that $S^\perp$ is a subspace. For example, if $S = \emptyset$, then $S^\perp = \F_q^n$, and if $S = \F_q^n$, then $S^\perp = \{0\}$. Furthermore, $S^\perp = \langle S \rangle^\perp$, where $\langle S \rangle$ is the subspace spanned by $S$. Therefore, it is enough to check orthogonality on a spanning set such as a basis.
+
+\begin{example}
+Let $q = 2$ and $S = \{ 1010, 0101 \} \subseteq \F_2^4$. The vectors $x \in S^\perp$ satisfy
+\begin{align*}
+    x \cdot (1, 0, 1, 0) = 0 &\iff x_1 + x_3 = 0 \\
+    x \cdot (0, 1, 0, 1) = 0 &\iff x_2 + x_4 = 0.
+\end{align*}
+Therefore,
+\begin{equation*}
+    S^\perp = \{0000, 1010, 0101, 1111\}.
+\end{equation*}
+\end{example}
+
+The elements of $S$ describe what linear dependencies there are between the symbols of $x \in S^\perp$.
+
+\begin{theorem}\label{thm:dual_space_dimension}
+Let $V \subseteq \F_q^n$ be a subspace. Then, $\dim(V) + \dim(V^\perp) = n$.
+\end{theorem}
+
+\begin{proof}
+Let $k = \dim(V)$ and $\{v_1, \dots, v_k\}$ be a basis of $V$. Let $A$ be a $k \times n$ matrix whose rows are $v_1, \dots, v_k$. Then, $x \in V^\perp$ if and only if $v_i x^T = 0$ for all $i = 1, \dots, k$, \ie, if $Ax^T = 0$. The rank of $A$ is $k$ as $v_1, \dots, v_k$ are linearly independent, so the right nullspace of $A$ has dimension $n - k$ by the rank-nullity theorem.
+\end{proof}
+
+\begin{lemma}\label{lem:dual_properties}
+Let $V \subseteq \F_q^n$ be a subspace. Then, $(V^\perp)^\perp = V$.
+\end{lemma}
+
+\begin{proof}
+Let $x \in V$. Then $x \cdot y = 0$ for all $y \in V^\perp$, so $x \in (V^\perp)^\perp$. Therefore, $V \subseteq (V^\perp)^\perp$. Furthermore, $\dim((V^\perp)^\perp) = n - \dim(V^\perp) = \dim(V)$, so the subspaces are equal.
+\end{proof}
+
+\subsection{Linear block codes}
+
+A \emph{linear code} is a subspace $\mathcal{C} \subseteq \F_q^n$ over the field $\F_q$. If $\mathcal{C}$ has dimension $k$ ($0 \leq k \leq n$), then we say it is an $[n, k]_q$-linear code, or $[n, k]$ code for short. As a block code it has size $M = q^k$ and rate $\mathcal{R} = \log_q(q^k) / n = k / n$. If $\mathcal{C}$ has minimum distance $d$, then we say it is an $[n, k, d]$-linear code.
+
+\begin{example}
+Some (trivial) examples of linear codes are $\{0\} \subseteq \F_q^n$ and $\F_q^n$. These codes are $[n, 0, n + 1]$ and $[n, n, 1]$ linear codes. The code whose codewords are of the form $(\lambda, \lambda, \dots, \lambda) \in \F_q^n$ for $\lambda \in \F_q$ is called a \emph{repetition code}. This code is a $[n, 1, n]$-linear code.
+\end{example}
+
+The \emph{dual} of a linear code $\mathcal{C}$ is the orthogonal complement $\mathcal{C}^\perp$. From Theorem~\ref{thm:dual_space_dimension} we get that the dimension of $\mathcal{C}^\perp$ is $n - k$, where $k$ is the dimension of $\mathcal{C}$. Recall, that for vectors over the real numbers $x \cdot x = 0$ if and only if $x = 0$, but this is not the case for vectors over finite fields. Therefore, a code $\mathcal{C}$ is said to be \emph{self-orthogonal} if $\mathcal{C} \subseteq \mathcal{C}^\perp$ and \emph{self-dual} if $\mathcal{C} = \mathcal{C}^\perp$.
+
+\begin{example}
+Let $S = \{111\} \subseteq \F_2^3$. Then $\mathcal{C} = S^\perp \subseteq \F_2^3$ is a linear code of length $3$ defined as
+\begin{equation*}
+    \mathcal{C} = \{ (x_1, x_2, x_3) \in \F_2^3 \mid x_1 + x_2 + x_3 = 0 \}.
+\end{equation*}
+The dual code $\mathcal{C}^\perp = \langle S \rangle$ is the repetition code of length $3$ over $\F_2$. The code $\mathcal{C}$ is defined by the equation $x_1 + x_2 + x_3 = 0$, which corresponds to the dual codeword $y = 111$ ($x \cdot y = 0$).
+\end{example}
+
+\subsection{Hamming weight}
+
+Recall the definition of Hamming distance as the number of places where two vectors differ. Over a vector space, we see that the Hamming distance is translation invariant and invariant under nonzero scalar multiplication, \ie,
+\begin{itemize}
+    \item $d(x, y) = d(x + z, y + z)$ for all $x, y, z \in \F_q^n$,
+    \item $d(x, y) = d(\alpha x, \alpha y)$ for all $x, y \in \F_q^n$ and $\alpha \in \F_q^*$.
+\end{itemize}
+
+Define the \emph{Hamming weight} of a word $x \in \F_q^n$ as $\wt(x) = d(x, 0)$ to be the number of nonzero coordinates in $x$.
+
+\begin{lemma}\label{lem:Hamming_distance_as_weight}
+If $x, y \in \F_q^n$, then $d(x, y) = \wt(x - y)$.
+\end{lemma}
+
+\begin{proof}
+As the Hamming distance is translation invariant we get that
+\begin{equation*}
+    d(x, y) = d(x - y + y, 0 + y) = d(x - y, 0) = \wt(x - y). \qedhere
+\end{equation*}
+\end{proof}
+
+Define the \emph{minimum weight} of a code $\mathcal{C}$ as the minimum weight of a nonzero vector
+\begin{equation*}
+    \wt(\mathcal{C}) = \min \{ \wt(x) \mid x \in \mathcal{C}, x \neq 0 \}.
+\end{equation*}
+
+\begin{lemma}\label{lem:linear_code_distance}
+Let $\mathcal{C}$ be a linear code. Then $d(\mathcal{C}) = \wt(\mathcal{C})$.
+\end{lemma}
+
+\begin{proof}
+By definition of minimum distance, there are vectors $x \neq y \in \mathcal{C}$ such that
+\begin{equation*}
+    d(\mathcal{C}) = d(x, y) = \wt(x - y) \geq \wt(\mathcal{C})
+\end{equation*}
+since $x - y \in \mathcal{C}$. On the other hand, there is a vector $z \neq 0 \in \mathcal{C}$ such that
+\begin{equation*}
+    \wt(\mathcal{C}) = \wt(z) = d(z, 0) \geq d(\mathcal{C}).
+\end{equation*}
+Hence, $\wt(\mathcal{C}) = d(\mathcal{C})$.
+\end{proof}
+
+The above lemma states that the minimum distance can be computed simply by computing the minimum weight.
+
+\subsection{Generator matrix and parity-check matrix}
+
+Let $\mathcal{C}$ be an $[n, k, d]$ code over $\F_q$. A $k \times n$ matrix $G$ is said to be a \emph{generator matrix} of $\mathcal{C}$ if the rows of $G$ form a basis of $\mathcal{C}$. Similarly, a $(n - k) \times n$ matrix $H$ is said to be a \emph{parity-check matrix} of $\mathcal{C}$ if it is the generator matrix of the dual $\mathcal{C}^\perp$.
+
+By definition of the dual, every row of $G$ is orthogonal to every row of $H$, \ie, $GH^T = 0$.
+
+\begin{lemma}\label{lem:code_containment}
+A vector $x \in \F_q^n$ is contained in a code $\mathcal{C}$ if and only if it can be expressed as $x = mG$ for some $m \in \F_q^k$. On the other hand, $x \in \mathcal{C}$ if and only if $xH^T = 0$.
+\end{lemma}
+
+\begin{proof}
+A vector $x$ is in the code if it can be expressed as a linear combination of the rows of $G$, \ie, if
+\begin{equation*}
+    x = m_1 g^1 + \dots + m_k g^k = mG,
+\end{equation*}
+where $m = (m_1, \dots, m_k)$ and $g^1, \dots, g^k$ are the rows of $G$.
+
+Let $h^1, \dots, h^{n-k}$ be the rows of $H$, \ie, a basis of $\mathcal{C}^\perp$. Then, $x \in \mathcal{C} = (\mathcal{C}^\perp)^\perp$ if and only if $x \cdot h^i = 0$ for all $i = 1, \dots, n - k$, \ie, if $xH^T = 0$.
+\end{proof}
+
+Let $G$ be a generator matrix for linear code $\mathcal{C}$ and let $M$ be a $k \times k$ invertible matrix over $\F_q$. Then, $MG$ is also a generator matrix of $\mathcal{C}$. In fact, all generator matrices of $\mathcal{C}$ are of this form.
+
+Let $g_1, \dots, g_n$ be the columns of $G$. A set $\mathcal{I} = \{i_1, \dots, i_k\} \subseteq [n]$ is an \emph{information set} of $\mathcal{C}$ if the columns $g_{i_1}, \dots, g_{i_k}$ form a basis of $\F_q^k$. Another way to say this is that the submatrix $G_\mathcal{I}$ consisting of the columns indexed by $\mathcal{I}$ is invertible. A codeword $x \in \mathcal{C}$ is uniquely determined by its projection on an information set, since $x_\mathcal{I} = mG_\mathcal{I}$ and
+\begin{equation*}
+    x = mG = mG_\mathcal{I}(G_\mathcal{I})^{-1}G = x_\mathcal{I}(G_\mathcal{I})^{-1}G.
+\end{equation*}
+
+\begin{theorem}\label{thm:minimum_distance_from_check_matrix}
+Let $\mathcal{C}$ be a linear code with parity-check matrix $H$. Then
+\begin{itemize}
+    \item $d(\mathcal{C}) \geq d$ if and only if any $d - 1$ columns of $H$ are linearly independent, and
+    \item $d(\mathcal{C}) \leq d$ if and only if there is a set of $d$ columns of $H$ that are linearly dependent.
+\end{itemize}
+\end{theorem}
+
+\begin{proof}
+Let $h_i$ denote the $i$th column of $H$. The columns $h_{i_1}, \dots, h_{i_e}$ are linearly dependent if and only if there exists coefficients $x_{i_1}, \dots, x_{i_e}$ such that
+\begin{equation*}
+    0 = x_{i_1}h_{i_1} + \dots + x_{i_e}h_{i_e} = x_1 h_1 + \dots + x_n h_n = (xH^T)^T,
+\end{equation*}
+where $x_i = 0$ if $i \notin \{i_1, \dots, i_e\}$. This is equivalent to saying that there is a nonzero codeword $x \in \mathcal{C}$ that has only zero coordinates outside of $\{i_1, \dots, i_e\}$. Such an $x \neq 0$ will have weight $\wt(x) \leq e$. The result follows from this.
+\end{proof}
+
+A generator matrix $G$ is said to be in \emph{standard form} (or \emph{systematic form}) if $G = (I_k \mid X)$ for some $k \times (n - k)$ matrix $X$. Here, $I_k$ is the $k \times k$ identity matrix. Similarly, a parity-check matrix $H$ is said to be in standard form if $H = (Y \mid I_{n - k})$ for some $(n - k) \times k$ matrix $Y$. If $G = (I_k \mid X)$ is in standard form, then $H = (-X^T \mid I_{n - k})$ is a parity-check matrix of the same code. This follows from the fact that
+\begin{equation*}
+    GH^T = I_k \cdot (-X) + X \cdot I_{n-k} = 0
+\end{equation*}
+and $G$ and $H$ have full rank.
+
+Let $m \in \F_q^k$ denote a message. Then we can encode $m$ to a codeword in $\mathcal{C}$ by the mapping $m \mapsto mG$. If $G$ is in standard form, then the first $k$ coordinates of $x = mG$ correspond directly to the message $m$.
+
+\subsection{Decoding of linear codes}
+
+During transmission, a codeword $x \in \mathcal{C}$ gets transformed to another word $y = x + e \in \F_q^n$. As we wanted to find the closest codeword $\hat{x} \in \mathcal{C}$ to the received vector $y$, we want to find the vector $e$ with the smallest weight, such that $y - e \in \mathcal{C}$. Recall that $y - e \in \mathcal{C}$ if and only if the cosets of $y$ and $e$ match, \ie, $y + \mathcal{C} = e + \mathcal{C}$. A codeword of minimal weight in a coset is called the \emph{coset leader}. Therefore, minimum distance decoding can be performed by finding the coset leader $e$ of the coset of $y$ and setting $\hat{x} = y - e$.
+
+Let $H$ be the parity-check matrix of a linear code $\mathcal{C}$. The \emph{syndrome} of a word $y$ (with respect to the parity-check matrix $H$) is
+\begin{equation*}
+    S(y) = yH^T.
+\end{equation*}
+Recall that $y \in \mathcal{C}$ if and only if $S(y) = 0$. Notice that $S$ is linear, so $S(x) = S(y)$ if and only if $x - y \in \mathcal{C}$, \ie, $x$ and $y$ are in the same coset. Therefore, the syndrome can be used to determine the coset of a word. By precomputing all coset leaders and their syndromes, minimum distance decoding can be performed by a simple lookup table. This is known as \emph{syndrome decoding}.
+
+Another decoding method is a probabilistic method called \emph{information set decoding (ISD)}, which involves randomly choosing an information set $\mathcal{I}$ of the code and computing $\hat{x} = y_\mathcal{I}(G_\mathcal{I})^{-1} G$. If there are no errors within $\mathcal{I}$, then this produces the correct result. Otherwise, we will not get a codeword that is close to $y$, so we can try again.
+
+Instead of decoding to the unique closest codeword within the radius $t = \lfloor (d - 1) / 2 \rfloor$ (if such exists), it may be beneficial to go beyond this radius and finding all codewords. This is known as \emph{list-decoding} and has been shown to produce good performance even when unique decoding is desired.
+
+In general, decoding a randomly chosen linear code is computationally hard. To have efficient algorithms, we need more structure from the codes.
+
+\subsection{Erasure coding}
+
+Another type of channel is the erasure channel, where instead of errors, we may loose symbols of the transmitted word in known positions. The \emph{binary erasure channel (BEC)} has alphabets $\mathcal{X} = \{0, 1\}$ and $\mathcal{Y} = \{0, 1, ?\}$ and can be described by the transition probabilities
+\begin{align*}
+    \P[y = 0 \mid x = 0] = \P[y = 1 \mid x = 1] &= 1 - \epsilon \\
+    \P[y = {?} \mid x = 1] = \P[y = {?} \mid x = 0] &= \epsilon,
+\end{align*}
+where $\epsilon \in [0, 1]$. The symbol $?$ denotes that the sent symbol was \emph{erased}. We can generalize the erasure channel to any alphabet such that the symbol is erased with probability $\epsilon$ and kept the same with probability $1 - \epsilon$.
+
+Let $\mathcal{J} = \{i \in [n] \mid y_i \neq {?} \}$ be the set of coordinates that are not erased in the output of the ($n$-fold) erasure channel. If $\mathcal{J}$ contains an information set of the code $\mathcal{C}$ that was used, then the sent codeword can be uniquely decoded.
+
+Recall that the codewords in the dual code $\mathcal{C}^\perp$ define linear conditions on the symbols of the codewords. For example, if $0111 \in \mathcal{C}^\perp$, then $x_2 + x_3 + x_4 = 0$ for all codewords $x = (x_1, x_2, x_3, x_4) \in \mathcal{C}$. If the symbols $x_3$ and $x_4$ are known, then $x_2$ can be solved.
+
+\begin{example}
+Let $\mathcal{C} = S^\perp \subseteq \F_2^3$, where $S = \{111\}$. If the received word is $y = 1?0$, then $x_1 = 1$ and $x_3 = 0$. The symbols have to satisfy $x_1 + x_2 + x_3 = 0$, so $x_2 = 1$. The sent codeword was $x = 110$.
+\end{example}
+
+\begin{example}
+A parity-check condition such as $000100001010 \in \F_2^{12}$ is said to have low density, since it has a small number of $1$'s compared to $0$'s. By combining multiple such low density parity checks, we can get a code with good erasure correction capabilities. We can correct the erasures in the symbols iteratively by starting with a parity check condition where we know all but one of the required symbols. Such a code construction is known as a \emph{low-density parity-check (LDPC) code}\footnote{These codes were discovered in the 1960's, but they were not seen as useful due to the large block lengths required. They were subsequently rediscovered later in the 1990's and have found many applications in wireless communications such as WiFi and 5G.}.
+\end{example}
+
+\end{document}

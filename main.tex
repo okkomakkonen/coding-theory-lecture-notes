@@ -1,0 +1,53 @@
+% The class myarticle can be found on https://github.com/okkomakkonen/latex-macros
+\documentclass[english, parskip, longtitle]{myarticle}
+
+\usepackage{subfiles}
+\usepackage[style=alphabetic]{biblatex}
+\usepackage{csquotes}
+\interfootnotelinepenalty=10000
+
+\addbibresource{bib.bib}
+
+\title{Applications of Coding Theory to Security}
+\author{Okko Makkonen}
+\date{\today}
+
+\DeclareMathOperator{\RS}{RS}
+\DeclareMathOperator{\GRS}{GRS}
+\DeclareMathOperator{\RM}{RM}
+
+\newcommand{\todo}[1]{{\color{red} \textbf{TODO:} #1}}
+
+\begin{document}
+
+\maketitle
+
+These lecture notes are written for the course \emph{Applications of Coding Theory to Security} at Aalto University and are based on the textbook \cite{ling2004coding}.
+
+\subfile{sections/1_channel_coding}
+
+\newpage
+\subfile{sections/2_finite_fields}
+
+\newpage
+\subfile{sections/3_linear_codes}
+
+\newpage
+\subfile{sections/4_bounds_on_codes}
+
+\newpage
+\subfile{sections/5_algebraic_coding_theory}
+
+\newpage
+\subfile{sections/6_reed_solomon_codes}
+
+\newpage
+\subfile{sections/7_secret_sharing}
+
+\newpage
+\subfile{sections/8_private_information_retrieval}
+
+\newpage
+\printbibliography
+
+\end{document}

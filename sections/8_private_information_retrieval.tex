@@ -1,0 +1,43 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+
+\begin{document}
+
+\section{Private information retrieval}
+
+One application of homomorphic secret sharing is private information retrieval, where the goal is to retrieve one file from a database without revealing the index of that file to the database owner. For a reference on private information retrieval coming from linear codes, see \cite{freij2017private}.
+
+\subsection{Private information retriveal from homomorphic secret sharing}
+
+Consider a distributed storage system consisting of $n$ nodes (=servers). We store $m$ files in the storage system, where each file $x^1, \dots, x^m$ is a vector in $\F_q^k$. The files are encoded to vectors $y^1, \dots, y^m$ using an $[n, k]$ linear code $\mathcal{C}$ such that each node holds one coordinate of $y^1, \dots, y^m$.
+
+To retrieve one of these files, say file $x^\ell$, we can compute the linear combination
+\begin{equation*}
+    y^\ell = \sum_{j \in [m]} \delta_{\ell, j} y^j,
+\end{equation*}
+where $\delta_{\ell, j} = 1$ when $\ell = j$ and $0$ otherwise. In particular, it is sufficient to recover the coordinates of $y^j$ in some information set of $\mathcal{C}$, since these uniquely determine the codeword $y^j$ and therefore the associated file $x^j$. We will retrieve the coordinates iteratively over some number of rounds. Let $J \subseteq [n]$ be some subset and $\mathds{1}_J$ be the vector that has 1's at $J$ and 0's elsewhere. To obtain the coordinates in $J$, we may compute
+\begin{equation*}
+    y^\ell \star \mathds{1}_J = \sum_{j \in [m]} \delta_{\ell, j} \mathds{1}_J \star y^j = \sum_{j \in [m]} q^j \star y^j,
+\end{equation*}
+where $q^j = \delta_{\ell, j} \mathds{1}_J$.
+
+In \emph{private information retrieval} (\emph{PIR}), we want to retrieve one of the files without revealing the index of that file in the database. To do this, we may use secret sharing. In particular, we secret share the coefficients $q^j \in \mathcal{S} = \spn\{\mathds{1}_J\}$. Let $\mathcal{D} \subseteq \F_q^n$ be a linear code and choose codewords $d^j \in \mathcal{D}$ uniformly at random. The shares corresponding to the $j$th file are then $\hat{q}^j = q^j + d^j$. The $i$th coordinate of these shares are given to the $i$th node. All the nodes compute the result
+\begin{equation*}
+    \sum_{j \in [m]} \hat{q}^j \star y^j = \sum_{j \in [m]} \delta_{\ell, j} \mathds{1}_J \star y^j + \sum_{j \in [m]} y^j \star d^j = y^\ell \star \mathds{1}_J + \underbrace{\sum_{j \in [m]} y^j \star d^j}_{\in \mathcal{C} \star \mathcal{D}}.
+\end{equation*}
+As long as $\lvert J \rvert = \wt(\mathds{1}_J) \leq d(\mathcal{C} \star \mathcal{D}) - 1$, we can always decode $y^j \star \mathds{1}_J$ from the result (this follows directly from Remark~\ref{rmk:trivial_intersection_from_weight}). Thus, we can get any $d(\mathcal{C} \star \mathcal{D}) - 1$ coordinates of $y^\ell$ in one iteration. As we need $k$ coordinates, we can repeat the process $s = \tfrac{k}{d(\mathcal{C} \star \mathcal{D}) - 1}$ many times\footnote{We do not have to assume divisibility of $k$ and $d(\mathcal{C} \star \mathcal{D}) - 1$. Instead, we can assume that the file consists of $b = d(\mathcal{C} \star \mathcal{D}) - 1$ ``fragments'', which are each encoded to a codeword in $\mathcal{C}$. Then, we need to retrieve $bk$ symbols to assemble the entire file.} for different choices of $J$, such that the coordinates cover an information set. In each iteration we download a total of $n$ symbols in $\F_q$. The \emph{rate} of the PIR scheme will be
+\begin{equation*}
+    \mathcal{R} = \frac{k}{sn} = \frac{d(\mathcal{C} \star \mathcal{D}) - 1}{n}.
+\end{equation*}
+
+Recall from Corollary~\ref{cor:dual_distance_and_min_distance_condition}, that observing any $d(\mathcal{D}^\perp) - 1$ coordinates of the queries $\hat{q}^j$ reveals nothing about the secret values $\delta_{\ell, j} \mathds{1}_J$, so the index of the desired file $x^\ell$ is kept secret.
+
+\subsection{Private information retrieval from Reed--Solomon codes}
+
+In the description in the previous section, we may choose the codes $\mathcal{C} = \RS_k(\alpha)$ and $\mathcal{D} = \RS_t(\alpha)$. Then the rate of the scheme will be
+\begin{equation*}
+    \mathcal{R} = \frac{d(\mathcal{C} \star \mathcal{D}) - 1}{n} = \frac{n - (k + t - 1)}{n},
+\end{equation*}
+since $\mathcal{C} \star \mathcal{D} = \RS_k(\alpha) \star \RS_t(\alpha) = \RS_{k + t - 1}(\alpha)$ assuming that $k + t - 1 \leq n$. Furthermore, the index of the desired file is kept secret from any $d(\mathcal{D}^\perp) - 1 = t$ nodes by Corollary~\ref{cor:dual_distance_and_min_distance_condition}, since $\mathcal{D}$ is MDS.
+
+\end{document}

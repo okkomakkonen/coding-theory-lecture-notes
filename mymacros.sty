@@ -1,0 +1,296 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mymacros}[2023/03/09 MyMacros package]
+
+\newif\if@nobeamer
+\newif\if@redefine
+
+% If the beamer option is set, then this package can be used with beamer
+% In particular, it does not load the enumitem package, which messes up with beamer
+\DeclareOption{beamer}{\@nobeamerfalse}
+\DeclareOption{nobeamer}{\@nobeamertrue}
+
+% If the noredefine option is set, then this package does not redefine existing commands
+\DeclareOption{noredefine}{\@redefinefalse}
+\DeclareOption{redefine}{\@redefinetrue}
+
+% Throws a warning for unused options
+\DeclareOption*{\OptionNotUsed}
+
+% Default options
+\ExecuteOptions{nobeamer,redefine}
+\ProcessOptions\relax
+
+% Load packages
+% =============
+
+% Makes it possible to use the comma as a decimal separator
+\RequirePackage{icomma}
+
+% Proper spacing after text macros
+\RequirePackage{xspace}
+
+% Better enumerate, itemize and description environments
+\if@nobeamer
+\RequirePackage[shortlabels]{enumitem}
+\fi
+
+% Provides the \url and \href commands
+\RequirePackage{hyperref}
+
+% Makes it possible to use colors
+\RequirePackage{xcolor}
+
+% Provides support for figure
+\RequirePackage{graphicx}
+\RequirePackage{float}
+
+% AMS packages
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{amsthm}
+
+% Mathtools for amsmath addons
+\RequirePackage{mathtools}
+
+% Provides \mathds, \mathscr and \bm fonts for math
+\RequirePackage{dsfont}
+\RequirePackage{mathrsfs}
+\RequirePackage{bm}
+
+% Array package for the \newcolumntype command
+\RequirePackage{array}
+
+
+% Define document commands
+% ========================
+
+% Number a specific equation in a *-environment
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+% Defines the columntypes L, C, R that includes the dollars
+\newcolumntype{L}{>{$}l<{$}}
+\newcolumntype{C}{>{$}c<{$}}
+\newcolumntype{R}{>{$}r<{$}}
+
+% Annotate equations
+\newcommand{\annotate}[1]{\shortintertext{\qquad(#1)}}
+
+% Latin abbreviations
+\newcommand{\cf}{\emph{cf.}\@\xspace}
+\newcommand{\eg}{\emph{e.g.}\@\xspace}
+\newcommand{\ie}{\emph{i.e.}\@\xspace}
+\newcommand{\etc}{\emph{etc.}\@\xspace}
+\newcommand{\etal}{\emph{et~al.}\@\xspace}
+
+% Boxed if and only if arrows for proofs
+\newcommand{\ProofRightarrow}{\raisebox{0.25ex}{\fbox{\parbox[c][1.15ex][b]{1em}{$\Rightarrow$}}}\@\xspace}
+\newcommand{\ProofLeftarrow}{\raisebox{0.25ex}{\fbox{\parbox[c][1.15ex][b]{1em}{$\Leftarrow$}}}\@\xspace}
+
+
+% Define theorem environments
+% ===============================
+
+\if@nobeamer
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem*{claim}{Claim}
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[theorem]
+\newtheorem*{note}{Note}
+\fi
+
+
+% Define common macros for math
+% =============================
+
+% Common sets
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\V}{\mathbb{V}}
+\newcommand{\I}{\mathbb{I}}
+\newcommand{\1}{\mathds{1}}
+
+% Some new arrow names
+\newcommand{\into}{\hookrightarrow}
+\newcommand{\onto}{\twoheadrightarrow}
+
+% New set complement
+\newcommand{\comp}{\mathsf{c}}
+
+% New transpose
+\newcommand{\trans}{{\mkern-1.5mu\mathsf{T}}}
+
+% New math operators
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\esssup}{ess\,sup}
+\DeclareMathOperator*{\essinf}{ess\,inf}
+
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\ran}{ran}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\spn}{span}
+\DeclareMathOperator{\cl}{cl}
+
+\DeclareMathOperator{\multideg}{multideg}
+\DeclareMathOperator{\ord}{ord}
+\DeclareMathOperator{\chr}{char}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\lcm}{lcm}
+\DeclareMathOperator{\disc}{disc}
+\DeclareMathOperator{\Nm}{Nm}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Div}{Div}
+\DeclareMathOperator{\Princ}{Princ}
+
+\DeclareMathOperator{\wt}{wt}
+\DeclareMathOperator{\ev}{ev}
+
+\DeclareMathOperator{\rem}{rem}
+\DeclareMathOperator{\quo}{quo}
+
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator*{\esssupp}{ess\,supp}
+\DeclareMathOperator{\res}{res}
+
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\Sym}{Sym}
+\DeclareMathOperator{\Mat}{Mat}
+\DeclareMathOperator{\Res}{Res}
+\DeclareMathOperator{\Spec}{Spec}
+\DeclareMathOperator{\Proj}{Proj}
+
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\SO}{SO}
+\DeclareMathOperator{\SL}{SL}
+\DeclareMathOperator{\Sp}{Sp}
+\DeclareMathOperator{\Ad}{Ad}
+
+% Operators with specific delimiters
+\DeclarePairedDelimiterXPP\E[1]{\mathbb{E}}{[}{]}{}{#1}
+\DeclarePairedDelimiterXPP\Var[1]{\operatorname{Var}}{[}{]}{}{#1}
+
+% Differential d
+\newcommand{\dd}{\mathop{}\!\mathrm{d}}
+
+% Local L^p spaces
+\newcommand{\loc}{\mathrm{loc}}
+
+% Perp before the variable
+\newcommand{\prep}{{}^\perp}
+
+% Triple vertical bars
+% Copied from https://tex.stackexchange.com/a/54395
+\newcommand{\lWert}{\left\vert\kern-0.25ex\left\vert\kern-0.25ex\left\vert}
+\newcommand{\rWert}{\right\vert\kern-0.25ex\right\vert\kern-0.25ex\right\vert}
+
+% Dashed integral sign
+% Copied from https://imathworks.com/tex/tex-latex-how-to-do-this-symbol-integral-with-a-barre-in-latex/
+\def\X@int#1{\mathchoice
+    {\XX@int\displaystyle\textstyle{#1}}%
+    {\XX@int\textstyle\scriptstyle{#1}}%
+    {\XX@int\scriptstyle\scriptscriptstyle{#1}}%
+    {\XX@int\scriptscriptstyle\scriptscriptstyle{#1}}%
+      \!\int}
+\def\XX@int#1#2#3{{\setbox0=\hbox{$#1{#2#3}{\int}$}
+    \vcenter{\hbox{$#2#3$}}\kern-.5\wd0}}
+\def\dint{\X@int-}
+\def\ddint{\X@int=}
+
+% Define the \ndiv command from the matha font
+\DeclareFontFamily{U}{matha}{\hyphenchar\font45}
+\DeclareFontShape{U}{matha}{m}{n}{
+      <5> <6> <7> <8> <9> <10> gen * matha
+      <10.95> matha10 <12> <14.4> <17.28> <20.74> <24.88> matha12
+      }{}
+\DeclareSymbolFont{matha}{U}{matha}{m}{n}
+\DeclareFontSubstitution{U}{matha}{m}{n}
+\DeclareMathSymbol{\ndiv}{\mathbin}{matha}{'037}
+
+
+% Redefine some commands
+% ======================
+
+\if@redefine
+
+% The \Re and \Im are already defined, but they look bad
+\let\Re\undefined
+\let\Im\undefined
+\DeclareMathOperator{\Re}{Re}
+\DeclareMathOperator{\Im}{Im}
+
+% The \div symbol is rarely used so we use it to denote divisibility
+\let\old@div\div
+\newcommand{\divsymbol}{\old@div}
+\renewcommand{\div}{\mid}
+
+% The \C is sometimes defined
+\providecommand{\C}{}
+\renewcommand{\C}{\mathbb{C}}
+
+% The \P is already defined to be the pilcrow
+\let\old@P\P
+\newcommand{\pilcrow}{\old@P}
+\renewcommand{\P}{\mathbb{P}}
+
+% Override \Pr
+\let\Pr\undefined
+\DeclarePairedDelimiterXPP\Pr[1]{\mathbb{P}}{[}{]}{}{#1}
+
+% The wide versions look a lot better from my testing
+\let\old@tilde\tilde
+\let\old@hat\hat
+\newcommand{\narrowtilde}{\old@tilde}
+\newcommand{\narrowhat}{\old@hat}
+\renewcommand{\tilde}{\widetilde}
+\renewcommand{\hat}{\widehat}
+
+% Use the variant version for some symbols
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\phi}{\varphi}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+
+% Fix the \left and \right commands to have better spacing
+% Copied from https://tex.stackexchange.com/a/2610
+\let\old@left\left
+\let\old@right\right
+\renewcommand{\left}{\mathopen{}\mathclose\bgroup\old@left}
+\renewcommand{\right}{\aftergroup\egroup\old@right}
+
+% Better \smallsetminus
+% Copied from https://tex.stackexchange.com/a/87193
+\RequirePackage{tikz}
+\newcommand{\smallsetminus@D}{\hbox{\tikz{\draw[line width=0.45pt,line cap=round] (0,0) -- (110:1.3ex);}}}
+\newcommand{\smallsetminus@T}{\smallsetminus@D}
+\newcommand{\smallsetminus@S}{\hbox{\tikz{\draw[line width=0.4pt,line cap=round] (0,0) -- (111:0.85ex);}}}
+\newcommand{\smallsetminus@SS}{\hbox{\tikz{\draw[line width=0.3pt,line cap=round] (0,0) -- (112:0.65ex);}}}
+\renewcommand{\smallsetminus}{\mathbin{\mathchoice{\smallsetminus@D}{\smallsetminus@T}{\smallsetminus@S}{\smallsetminus@SS}}}
+
+\else
+
+% Provide the new commands in either case
+\newcommand{\divsymbol}{\div}
+\newcommand{\pilcrow}{\P}
+\newcommand{\narrowtilde}{\tilde}
+\newcommand{\narrowhat}{\hat}
+
+\fi

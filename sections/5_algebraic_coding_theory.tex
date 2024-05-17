@@ -1,0 +1,243 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+
+\begin{document}
+
+\section{Algebraic coding theory}
+
+In this section we will look at some algebraic ways of constructing linear codes. As opposed to algebraic methods, so called \emph{modern coding theory} studies iterative algorithms and probabilistic methods as well as codes such as low-density parity-check (LDPC) codes, turbo codes and polar codes. These codes have long block lengths and are used in wireless communications, satellite communications or storage mediums. On the other hand, the algebraic codes that we will consider in this section have shorter block lengths and have applications in distributed storage systems and cryptography. Algebraic codes can be constructed over arbitrary finite fields while modern codes are often only constructed over the binary field. The main reference for this section is \cite[Chapters 6 and 7]{ling2004coding}.
+
+\subsection{Codes from other codes}
+
+Before starting to construct linear codes we will look at ways of constructing new codes from a given $[n, k, d]$-linear code $\mathcal{C}$.
+
+The \emph{lengthening} of $\mathcal{C}$ is a $[n + 1, k, d]$ code consisting of codewords $(x_1, \dots, x_n, 0)$, where $x = (x_1, \dots, x_n) \in \mathcal{C}$. This code is just $\mathcal{C}$ embedded to a larger ambient space $\F_q^{n+1}$.
+
+Subspaces of $\mathcal{C}$ are known as \emph{subcodes}. The minimum distance of a subcode is at least the minimum distance of $\mathcal{C}$ as it is a subset of $\mathcal{C}$. In addition, there exists an $[n, k - 1, d]$ subcode of $\mathcal{C}$ that is constructed by taking a codeword $c \in \mathcal{C}$ of weight $d$ and considering a $(k - 1)$-dimensional subspace of $\mathcal{C}$ containing $c$.
+
+Codes that are obtained from $\mathcal{C}$ by (repeatedly) removing one coordinate from each of the codewords is said to be a \emph{punctured} code. Assume $d \geq 2$ and let $c \in \mathcal{C}$ be a codeword of weight $d$. Let $i \in [n]$ be such that $c_i \neq 0$. Consider the code $\mathcal{C}_{[n] \setminus \{i\}} = \{ (x_1, \dots, x_{i-1}, x_{i+1}, \dots, x_n) \mid x \in \mathcal{C} \}$. The projection map of removing the $i$th coordinate is injective, since all nonzero codewords in $\mathcal{C}_{[n] \setminus \{i\}}$ contain at least $d - 1 \geq 1$ nonzero coordinates. Thus, $\mathcal{C}_{[n] \setminus \{i\}}$ is an $[n - 1, k, d - 1]$-linear code.
+
+We can recap the above three constructions in the following theorem.
+
+\begin{theorem}
+If $\mathcal{C}$ is an $[n, k, d]$-linear code, then there exists an $[n + r, k - s, d - t]$-linear code for any $r \geq 0$, $0 \leq s \leq k - 1$ and $0 \leq t \leq d - 1$.
+\end{theorem}
+
+All of the codes given by the above theorem are worse than the original code $\mathcal{C}$, since they have lower rate or worse minimum distance. On the other hand, the \emph{extended code} of $\mathcal{C}$ is
+\begin{equation*}
+    \overline{\mathcal{C}} = \{ (x_1, \dots, x_n, -\sum_{i=1}^n x_i) \in \F_q^n \mid (x_1, \dots, x_n) \in \mathcal{C} \}.
+\end{equation*}
+
+\begin{theorem}
+The extended code of an $[n, k, d]$-linear code is an $[n + 1, k, d']$-linear code, where $d \leq d' \leq d + 1$.
+\end{theorem}
+
+\begin{proof}
+The length and dimension of the code are clear. Furthermore, a parity-check matrix of the code can be given by
+\begin{equation*}
+    H' = \begin{pmatrix}
+        & & & 0 \\
+        & H & & 0 \\
+        & & & 0 \\
+        1 & 1 & \cdots & 1
+    \end{pmatrix}
+\end{equation*}
+The first $n - k$ rows correspond to the fact that the first $n$ symbols have to be in $\mathcal{C}$, while the last row means that all the symbols have to sum to zero.
+
+As $d(\mathcal{C}) = d$, we have that any $d - 1$ columns of $H$ are linearly independent. Thus, any $d - 1$ columns of $H'$ are linearly independent by just looking at the first $n - k$ coordinates. Consider a collection of $d$ linearly dependent columns of $H$. The corresponding columns of $H'$ and the last column are also linearly dependent. Therefore, there is a set of $d + 1$ columns of $H'$ are linearly dependent. Therefore, by Theorem~\ref{thm:minimum_distance_from_check_matrix} $\overline{\mathcal{C}}$ has minimum distance $d'$ with $d \leq d' \leq d + 1$.
+\end{proof}
+
+We can also combine codes with the following methods. Given an $[n_1, k_1, d_2]$ code $\mathcal{C}_1$ and an $[n_2, k_2, d_2]$ code $\mathcal{C}_2$ we can define their \emph{direct sum} as
+\begin{equation*}
+    \mathcal{C}_1 \oplus \mathcal{C}_2 = \{ (x, y) \in \F_q^{n_1 + n_2} \mid x \in \mathcal{C}_1, y \in \mathcal{C}_2 \}.
+\end{equation*}
+
+\begin{theorem}
+The direct sum of an $[n_1, k_1, d_1]$ and an $[n_2, k_2, d_2]$ code is an $[n_1 + n_2, k_1 + k_2, \min\{d_1, d_2\}]$ code.
+\end{theorem}
+
+\begin{proof}
+The length and dimension are clear from linear algebra. Notice that $\mathcal{C}_1 \oplus \mathcal{C}_2$ contains codewords of the form $(0, y)$ and $(x, 0)$ for $x \in \mathcal{C}_1$ and $y \in \mathcal{C}_2$, so it contains codewords of weight $\wt(x)$ and $\wt(y)$. Furthermore, if $c = (x, y) \in \mathcal{C}_1 \oplus \mathcal{C}_2$ is a nonzero codeword, then either $x \neq 0$ or $y \neq 0$. Therefore, $\wt(c) \geq \min\{d_1, d_2\}$.
+\end{proof}
+
+Instead of taking the direct sum of two codes, we may use the so-called \emph{$(u, u + v)$-construction} (also known as the \emph{Plotkin sum}). Let $\mathcal{C}_1$ and $\mathcal{C}_2$ be linear codes of length $n$. Define
+\begin{equation*}
+    \mathcal{C}_1 \boxplus \mathcal{C}_2 = \{ (u, u + v) \in \F_q^{2n} \mid u \in \mathcal{C}_1, v \in \mathcal{C}_2 \}.
+\end{equation*}
+
+\begin{theorem}\label{thm:plotkin_sum}
+Let $\mathcal{C}_1$ and $\mathcal{C}_2$ be $[n, k_1, d_1]$ and $[n, k_2, d_2]$ codes. Then $\mathcal{C}_1 \boxplus \mathcal{C}_2$ is a $[2n, k_1 + k_2, \min\{2d_1, d_2\}]$-linear code.
+\end{theorem}
+
+\begin{proof}
+The length of the code is clear. Let $u_1, \dots, u_{k_1}$ and $v_1, \dots, v_{k_2}$ be bases for $\mathcal{C}_1$ and $\mathcal{C}_2$, respectively. Then, the vectors $(u_i, u_i)$ and $(0, v_j)$ for $i = 1, \dots, k_1$ and $j = 1, \dots, k_2$ span $\mathcal{C}_1 \boxplus \mathcal{C}_2$. Furthermore, these vectors are linearly independent, since
+\begin{equation*}
+    \sum_{i=1}^{k_1} \alpha_i (u_i, u_i) + \sum_{j=1}^{k_2} \beta_j (0, v_j) = 0
+\end{equation*}
+implies immediately that $\alpha_i = 0$ for all $i$ as the $u_i$ are linearly independent. Furthermore, $\beta_j = 0$ for all $j$, since the $v_j$ are linearly independent. Thus, the dimension of the code is $k_1 + k_2$.
+
+Let $u, v \in \F_q^n$. Then
+\begin{equation*}
+    \wt(v) = \wt(v + u - u) \leq \wt(v + u) + \wt(-u) \implies \wt(u + v) \geq \wt(v) - \wt(u).
+\end{equation*}
+Let $x = (u, u + v) \neq 0$ be a codeword. If $v = 0$, then $u \neq 0$ and $\wt(x) = 2\wt(u) \geq 2d_1$. On the other hand, if $v \neq 0$, then
+\begin{equation*}
+    \wt(x) = \wt(u) + \wt(u + v) \geq \wt(u) + \wt(v) - \wt(u) = \wt(v) \geq d_1.
+\end{equation*}
+Additionally, if $u \in \mathcal{C}_1$ and $v \in \mathcal{C}_2$ are such that $\wt(u) = d_1$ and $\wt(v) = d_2$, then $x = (u, u), y = (0, v) \in \mathcal{C}_1 \boxplus \mathcal{C}_2$ are such that $\wt(x) = 2d_1$ and $\wt(y) = d_1$.
+\end{proof}
+
+The generator matrix of $\mathcal{C}_1 \boxplus \mathcal{C}_2$ is given by
+\begin{equation*}
+    G = \begin{pmatrix}
+        G_1 & G_1 \\
+        0 & G_2
+    \end{pmatrix},
+\end{equation*}
+where $G_1$ and $G_2$ are generator matrices for $\mathcal{C}_1$ and $\mathcal{C}_2$, respectively.
+
+\subsection{Reed--Muller codes}
+
+Define $\RM(r, m)$ to be a family of binary codes depending on integers $m \geq 0$ and $0 \leq r \leq m$. First, set $\RM(0, m)$ to be the binary repetition code of length $2^m$, \ie,
+\begin{equation*}
+    \RM(0, m) = \{ (\lambda, \dots, \lambda) \in \F_2^{2^m} \mid \lambda \in \F_2 \}.
+\end{equation*}
+Then, recursively define for $m \geq r \geq 1$
+\begin{equation*}
+    \RM(r, m) = \begin{dcases*}
+        \F_2^{2^m} & if $r = m$ \\
+        \RM(r, m - 1) \boxplus \RM(r - 1, m - 1) & if $r < m$
+    \end{dcases*}.
+\end{equation*}
+
+\begin{theorem}
+The code $\RM(r, m)$ for $m \geq 0$ and $0 \leq r \leq m$ is a $[2^m, k, 2^{m - r}]$-linear code over $\F_2$ with
+\begin{equation*}
+    k = \sum_{i=0}^r \binom{m}{i}.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+We will prove the statement by induction on $m$. The base case is clear, since $\RM(0, 0) = \F_2$ is a $[1, 1, 1]$ code. Furthermore, $\RM(0, m)$ is a $[2^m, 1, 2^m]$ code, so the statement is also clear. Let $m \geq 0$ and $0 \leq r \leq m$ and assume that the statement holds for $\RM(r', m - 1)$ for all $0 \leq r' \leq m - 1$. If $r = m$, then $\RM(r, m) = \F_2^{2^m}$ is a $[2^m, 2^m, 1]$ code and
+\begin{equation*}
+    \sum_{i=0}^m \binom{m}{i} = 2^m,
+\end{equation*}
+so the code satisfies the theorem. On the other hand, if $r < m$, then
+\begin{equation*}
+    \RM(r, m) = \RM(r, m - 1) \boxplus \RM(r - 1, m - 1).
+\end{equation*}
+By the induction assumption, $\RM(r, m - 1)$ is a $[2^{m - 1}, \sum_{i=0}^r \binom{m - 1}{i}, 2^{m - r - 1}]$ code and $\RM(r - 1, m - 1)$ is a $[2^{m-1}, \sum_{i=0}^{r-1} \binom{m - 1}{i}, 2^{m - r}]$ code. Thus, by Theorem~\ref{thm:plotkin_sum} $\RM(r, m)$ is an $[n, k, d]$ code with $n = 2 \cdot 2^{m - 1} = 2^m$, $d = \min\{2\cdot 2^{m - r - 1}, 2^{m - r}\} = 2^{m - r}$ and
+\begin{align*}
+    k &= \sum_{i=0}^r \binom{m - 1}{i} + \sum_{i=0}^{r-1} \binom{m - 1}{i} \\
+    &= 1 + \sum_{i=1}^r \binom{m - 1}{i} + \sum_{i=1}^r \binom{m - 1}{i - 1} \\
+    &= 1 + \sum_{i=1}^r \binom{m}{i} \\
+    &= \sum_{i=0}^r \binom{m}{i}.
+\end{align*}
+This matches the statement, so we have proven the statement for all $m, r$ by induction.
+\end{proof}
+
+\begin{example}
+Denote the generator matrix of $\RM(r, m)$ by $G_{r, m}$. Let us find the generator matrix for $\RM(2, 3)$. First, we find
+\begin{equation*}
+    G_{0, 1} =
+    \begin{pmatrix}
+        1 & 1
+    \end{pmatrix}, \quad
+    G_{1, 1} =
+    \begin{pmatrix}
+        1 & 0 \\
+        0 & 1
+    \end{pmatrix}.
+\end{equation*}
+Then, by using the recursive formula we get
+\begin{equation*}
+    G_{1, 2} =
+    \begin{pmatrix}
+        G_{1, 1} & G_{1, 1} \\
+        0 & G_{0, 1}
+    \end{pmatrix} =
+    \begin{pmatrix}
+        1 & 0 & 1 & 0 \\
+        0 & 1 & 0 & 1 \\
+        0 & 0 & 1 & 1
+    \end{pmatrix}, \quad
+    G_{2, 2} =
+    \begin{pmatrix}
+        1 & 0 & 0 & 0 \\
+        0 & 1 & 0 & 0 \\
+        0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 1
+    \end{pmatrix}.
+\end{equation*}
+Finally,
+\begin{equation*}
+    G_{2, 3} =
+    \begin{pmatrix}
+        G_{2, 2} & G_{2, 2} \\
+        0 & G_{1, 2}
+    \end{pmatrix} =
+    \begin{pmatrix}
+        1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+        0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 \\
+        0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 \\
+        0 & 0 & 0 & 0 & 1 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 1 & 0 & 1 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 1 & 1
+    \end{pmatrix}.
+\end{equation*}
+\end{example}
+
+Another way to construct a generator matrix of $\RM(r, m)$ is by considering the matrix $G_m = G^{\otimes m}$ (the $m$-fold tensor product of $G$ with itself), where $G = \begin{psmallmatrix}1 & 1 \\ 0 & 1\end{psmallmatrix}$ and choosing the rows of $G_m$ with weight $\geq 2^{m - r}$. This method will maximize the minimum distance of the resulting code. However, it turns out that there is a better way to remove some of the rows of $G^{\otimes m}$ that will achieve the channel capacity on the BSC. Such a code is known as a \emph{polar code} and was introduced in 2009.
+
+\subsection{Cyclic codes}
+
+A linear code $\mathcal{C}$ is said to be \emph{cyclic} if $(c_1, \dots, c_n) \in \mathcal{C}$ implies that $(c_n, c_1, \dots, c_{n-1}) \in \mathcal{C}$. This means that \emph{cyclic shifts} of codewords are still codewords. Denote the cyclic shift of a vector $x$ by $\sigma(x)$.
+
+\begin{example}
+The full space code $\F_q^n$ and the repetition code $\{(\lambda, \dots, \lambda) \mid \lambda \in \F_q \}$ are cyclic codes.
+\end{example}
+
+Consider the injective linear map $\pi \colon \F_q^n \to \F_q[x] / (x^n - 1)$ given by
+\begin{equation*}
+    (a_0, \dots, a_{n-1}) \mapsto a_0 + a_1x + \dots + a_{n-1}x^{n-1}.
+\end{equation*}
+If $\mathcal{C} \subseteq \F_q^n$ is a linear code, then $\pi(\mathcal{C})$ is a subspace of $\F_q[x] / (x^n - 1)$. Therefore, $\pi(\mathcal{C})$ is an ideal if and only if $x \cdot \pi(\mathcal{C}) \subseteq \pi(\mathcal{C})$. Notice that
+\begin{align*}
+    x \pi(c) &= x \cdot (c_0 + c_1x + \dots c_{n-1} x^{n-1}) \\
+    &= c_0 x + c_1 x^2 + \dots + c_{n-1} x^n = c_{n-1} + c_0 x + \dots + c_{n-2} x^{n-1} \\
+    &= \pi(\sigma(c)).
+\end{align*}
+Hence, $x \cdot \pi(c) \in \pi(\mathcal{C})$ if and only if $\sigma(c) \in \mathcal{C}$. This means that cyclic codes in $\F_q^n$ correspond to ideals in $\F_q[x] / (x^n - 1)$.
+
+Ideals of $\F_q[x] / (x^n - 1)$ correspond to ideals of $\F_q[x]$ containing the ideal $(x^n - 1)$ (this is true in any commutative ring and any ideal). As ideals of $\F_q[x]$ containing $(x^n - 1)$ are generated by the divisors $g \in \F_q[x]$ of $x^n - 1$, we get a one-to-one correspondence between cyclic codes in $\F_q^n$ and monic divisors of $x^n - 1 \in \F_q[x]$. Let $\mathcal{C} \subseteq \F_q^n$ be a cyclic code. Then $\pi(\mathcal{C}) = \langle g \rangle \subseteq \F_q[x] / (x^n - 1)$ for some monic polynomial $g$ that is known as the \emph{generator polynomial} of $\mathcal{C}$.
+
+Let $g \in \F_q[x]$ be a divisor of $x^n - 1$ of degree $\deg(g) = n - k$. Then $\langle g \rangle \subseteq \F_q[x] / (x^n - 1)$ has dimension $k$ over $\F_q$ and consists of the equivalence classes of $g \cdot p$ where $p \in \F_q[x]$ has $\deg(p) < k$. Therefore, the subspace has basis $g, x \cdot g, \dots, x^{k - 1} \cdot g$. A generator matrix can be given by
+\begin{equation*}
+    G = \begin{pmatrix}
+        g_0 & g_1 & \cdots & g_{n - k - 1} & 0 & \cdots & 0 \\
+        0 & g_0 & \cdots & g_{n - k - 2} & g_{n - k - 1} & \cdots & 0 \\
+        \vdots & & \ddots & & & \ddots & \vdots \\
+        0 & 0 & \cdots & g_0 & g_1 & \cdots & g_{n - k - 1}
+    \end{pmatrix}.
+\end{equation*}
+
+\begin{example}
+Consider $x^4 - 1 \in \F_3[x]$. We know that $x^4 - 1 = (x^2)^2 - 1 = (x^2 - 1)(x^2 + 1) = (x - 1)(x + 1)(x^2 + 1)$. As $x^2 + 1$ does not have roots in $\F_3$, we know that the above is a factorization of $x^4 - 1$ to its irreducible factors. Therefore, $x^4 - 1$ has $2^3 = 8$ divisors that can be obtained as the different combinations of the 3 irreducible factors. Each of these factors has an associated cyclic code in $\F_3^4$. The divisors of $x^4 - 1$ and their corresponding codes are given by the below table.
+\begin{center}
+\begin{tabular}{LC}
+    g_1 = 1 & [4, 4, 1] \\
+    g_2 = x - 1 & [4, 3, 2] \\
+    g_3 = x + 1 & [4, 3, 2] \\
+    g_4 = x^2 - 1 & [4, 2, 2] \\
+    g_5 = x^2 + 1 & [4, 2, 2] \\
+    g_6 = x^3 + x^2 + x + 1 & [4, 1, 4] \\
+    g_7 = x^3 - x^2 + x - 1 & [4, 1, 4] \\
+    g_8 = x^4 - 1 & [4, 0, 5]
+\end{tabular}
+\end{center}
+These codes are all cyclic codes in $\F_3^4$ with the dimension given by $n - \deg(g_i)$. A cyclic code contains a codeword of weight 1 if and only if it contains the vector $10\cdots0$, \ie, if and only if the divisor is $1$. Therefore, the other cyclic codes have minimum distance $\geq 2$. The codes corresponding to $g_2, g_3, g_4, g_5$ contain a codeword of weight 2, so they all have minimum distance 2. Further, the codes generated by $g_6$ and $g_7$ are spanned by one full weight vector so they have minimum distance 4.
+\end{example}
+
+
+\end{document}

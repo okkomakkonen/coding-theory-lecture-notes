@@ -1,0 +1,214 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+
+\begin{document}
+
+\section{Bounds on the sizes of codes}
+
+In coding theory we want to find codes with a high rate and good error correction properties. As the minimum distance of a code affects the error correction, we want to bound the maximal size of a (possibly nonlinear) code with a given minimum distance. The main reference for this section is \cite[Chapter 5]{ling2004coding}.
+
+\subsection{Lower bounds}
+
+Consider an alphabet $\Sigma$ of size $q$ and words in $\Sigma^n$. Let $r \geq 0$ be an integer and $u \in \Sigma^n$ a word. Then the \emph{Hamming ball} of radius $r$ and center point $u$ is
+\begin{equation*}
+    \{ v \in \Sigma^n \mid d(u, v) \leq r \}.
+\end{equation*}
+
+\begin{lemma}\label{lem:Hamming_ball_size}
+The Hamming ball contains $V_q^n(r)$ elements, where
+\begin{equation*}
+    V_q^n(r) = \begin{dcases*}
+        \sum_{i=0}^r \binom{n}{i} (q - 1)^i & if $0 \leq r \leq n$ \\
+        q^n & if $r \geq n$
+    \end{dcases*}.
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+If $r \geq n$, then the Hamming ball contains all elements in the space $\Sigma^n$, so $V_q^n(r) = q^n$. On the other hand, the number of words $v \in \Sigma^n$ such that $d(u, v) = i$ can be computed as follows. There are $\binom{n}{i}$ sets of size $i$ where $u$ and $v$ can differ and $q - 1$ choices for each coordinate in this set. Thus, the number of elements at distance $i$ is $\binom{n}{i}(q-1)^i$. The result follows by summing up over all possible $0 \leq i \leq r$. Notice also that
+\begin{equation*}
+    q^n = (q - 1 + 1)^n = \sum_{i=0}^n \binom{n}{i}(q - 1)^i
+\end{equation*}
+so the equations agree for $r = n$.
+\end{proof}
+
+Given a (possibly nonlinear) code $\mathcal{C} \subseteq \Sigma^n$ of minimum distance $d$, if there exists a word $v \in \Sigma^n$ whose distance to all codewords is at least $d$, then $\mathcal{C} \cup \{v\}$ is also a code with minimum distance~$d$. This means that we can always extend the code until the balls of radius $d - 1$ centered at the codewords cover the space $\Sigma^n$.
+
+\begin{theorem}[Sphere-covering bound]\label{thm:sphere_covering_bound}
+There exists an $(n, M, d)_q$-code with
+\begin{equation*}
+    M \geq \frac{q^n}{\sum_{i=0}^{d-1} \binom{n}{i} (q - 1)^i}.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+As mentioned above, for a code of maximal size, the Hamming balls of radius $d-1$ have to cover $\Sigma^n$. Therefore,
+\begin{equation*}
+    M \cdot V_q^n(d - 1) \geq q^n. \qedhere
+\end{equation*}
+\end{proof}
+
+For linear codes we have the Gilbert--Varshamov bound.
+
+\begin{theorem}[Gilbert--Varshamov bound]\label{thm:Gilbert-Varshamov_bound}
+There exists an $[n, k, d]_q$-linear code if
+\begin{equation*}
+    q^k < \frac{q^n}{\sum_{i=0}^{d-2} \binom{n-1}{i} (q - 1)^i}.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+Let $\mathcal{C}$ be an $[n, k, d]$-linear code over $\F_q$ with an $(n-k) \times n$ parity-check matrix $H$. Recall from Theorem~\ref{thm:minimum_distance_from_check_matrix} that $\mathcal{C}$ has minimum distance $\geq d$ if any $d - 1$ columns of $H$ are linearly independent.
+
+We will choose the columns of $H$ in order by the following method. For the first column of $H$ choose any nonzero vector $c_1 \in \F_q^{n - k}$. Say that we have chosen the first $j$ columns $c_1, \dots, c_j$. The column $c_{j+1}$ cannot be in the span of any $d - 1$. The number of vectors in the span of exactly $i$ of the vectors $c_1, \dots, c_j$ is at most $\binom{j}{i} (q - 1)^i$. As $j \leq n - 1$, we have that the number of vectors that are in the span of at most $d - 2$ vectors is
+\begin{equation*}
+    \sum_{i=0}^{d-2} \binom{n-1}{i} (q - 1)^i < q^{n - k}.
+\end{equation*}
+Thus, we can always choose the vector $c_{j+1}$ to not be in the span of any $d - 2$ of the vectors. Hence, any $d - 1$ columns of $H$ are linearly independent.
+\end{proof}
+
+\subsection{The sphere-packing bound and perfect codes}
+
+The above two theorems give a lower bound on the maximal size of a code with given minimum distance. We can also upper bound this quantity.
+
+\begin{theorem}[Sphere-packing bound]\label{thm:sphere_packing_bound}
+Let $\mathcal{C}$ be an $(n, M, d)_q$-code. Then,
+\begin{equation*}
+    M \leq \frac{q^n}{\sum_{i=0}^t \binom{n}{i} (q - 1)^i},
+\end{equation*}
+where $t = \lfloor (d - 1) / 2 \rfloor$.
+\end{theorem}
+
+\begin{proof}
+If there exists a word $v \in \Sigma^n$ such that $d(v, x), d(v, y) \leq t$ for two distinct codewords $x \neq y \in \mathcal{C}$, then
+\begin{equation*}
+    d(x, y) \leq d(x, v) + d(v, y) \leq 2t \leq d - 1.
+\end{equation*}
+Hence, $\mathcal{C}$ does not have minimum distance $d$. This means that the Hamming balls of radius $t$ centered at the codewords have to be disjoint. Thus,
+\begin{equation*}
+    M \cdot V_q^n(t) \leq q^n. \qedhere
+\end{equation*}
+\end{proof}
+
+Codes that achieve the above bound with equality are known as \emph{perfect codes}.
+
+An interesting family of perfect codes are known as \emph{binary Hamming codes}. Let $r \geq 2$ be an integer and $n = 2^r - 1$. Let $H$ be the $r \times n$ binary matrix whose columns are all the nonzero vectors in $\F_2^r$. As $H$ has the standard basis vectors as columns, it must be that the rank of $H$ is $r$, \ie, $H$ is of full rank. Therefore, the code $\mathcal{C} \subseteq \F_q^n$ that has $H$ as parity-check matrix has dimension $k = n - r = 2^r - r - 1$. No two columns of $H$ are linearly dependent by construction, so the minimum distance of $\mathcal{C}$ is at least 3. Furthermore, the columns of $H$ contain the vectors $100 \cdots 0$, $010 \cdots 0$ and $110 \cdots 0$ which are linearly dependent. Thus, $\mathcal{C}$ has minimum distance $d = 3$. Thus, the binary Hamming codes are $[n = 2^r - 1, k = 2^r - r - 1, d = 3]_2$-linear codes. As the minimum distance is $3$, these codes are exactly $1$-error-correcting codes.
+
+The sphere-packing bound gives an upper bound of
+\begin{equation*}
+    M \leq \frac{2^n}{1 + n}
+\end{equation*}
+for $t = 1$ and $q = 2$. Plugging in the values of the Hamming code, we find that the upper bound is $2^{n - r} = 2^k$, so the binary Hamming codes achieve this bound with equality and are perfect codes.
+
+The decoding of binary Hamming codes is particularly simple. Let $x \in \mathcal{C}$ be a codeword and $y = x + e_i$ be the received codeword with 1 error at position $i$. The syndrome of $y$ is
+\begin{equation*}
+    yH^T = xH^T + e_iH^T = e_iH^T = h_i,
+\end{equation*}
+where $h_i$ is the $i$th column of $H$. As the columns of $H$ are unique it is simple to identify the index $i$ and compute $x = y - e_i$.
+
+\begin{example}
+Let $r = 3$. Then
+\begin{equation*}
+    H = \begin{pmatrix}
+    0 & 0 & 0 & 1 & 1 & 1 & 1 \\
+    0 & 1 & 1 & 0 & 0 & 1 & 1 \\
+    1 & 0 & 1 & 0 & 1 & 0 & 1
+    \end{pmatrix}
+\end{equation*}
+is a parity-check matrix for the $[7, 4, 3]$ binary Hamming code. Notice that the $i$th column of $H$ corresponds to the binary expansion of the number $i$. If $y = x + e_i$ is received, then the syndrome is $yH^T = e_iH^T = h_i$. Now we can directly read the index $i$ from $h_i$. For example, after receiving the word $y = 0001101$, we get the syndrome $yH^T = 110$. Writing this in decimal gives us $i = 6$ as the location of the corrupted symbol. Therefore, we decode to $x = 0001111$.
+\end{example}
+
+\subsection{The Singleton bound and MDS codes}
+
+The following bound is very fundamental to coding theory.
+
+\begin{theorem}[Singleton bound]\label{thm:Singleton_bound}
+Let $\mathcal{C}$ be an $(n, M, d)_q$-code. Then,
+\begin{equation*}
+    M \leq q^{n - d + 1}.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+Consider the $M$ codewords of $\mathcal{C}$ and remove the first $d - 1$ coordinates from each. As every distinct pair of codewords differ in at least $d$ coordinates, the shortened codewords must still be distinct and have length $n - (d - 1) = n - d + 1$. Therefore,
+\begin{equation*}
+    M \leq \lvert \Sigma^{n - d + 1} \rvert = q^{n - d + 1}. \qedhere
+\end{equation*}
+\end{proof}
+
+In particular, if $\mathcal{C}$ is an $[n, k, d]$-linear code over $\F_q$, then
+\begin{equation*}
+    k \leq n - d + 1
+\end{equation*}
+by taking logarithm to the base $q$ of both sides.
+
+Codes that achieve the above bound with equality are known as \emph{maximum distance separable (MDS) codes}. An $[n, k]$ MDS code has minimum distance $d = n - k + 1$.
+
+\begin{theorem}\label{thm:dual_MDS}
+Let $\mathcal{C}$ be a linear MDS code. Then $\mathcal{C}^\perp$ is MDS.
+\end{theorem}
+
+\begin{proof}
+Let $\mathcal{C}$ be an $[n, k]$ MDS code with generator matrix $G$. Let $m \in \F_q^k$ be a vector and $x = mG$ the corresponding codeword. If $\mathcal{I} \subseteq [n]$, $\lvert \mathcal{I} \rvert = k$, is a set of indices, then $x_\mathcal{I} = mG_\mathcal{I}$, where $G_\mathcal{I}$ is the matrix formed by taking the columns of $G$ indexed by $\mathcal{I}$. If $m \neq 0$, then $x \neq 0$ as $G$ has full rank. As $x$ has at least $n - k + 1$ nonzero entries $x_\mathcal{I} \neq 0$, so $G_\mathcal{I}$ has a trivial left nullspace and full rank. Hence, any set of $k$ columns of $G$ is linearly independent. As $G$ is the parity-check matrix of the dual code $\mathcal{C}^\perp$, we have that $d(\mathcal{C}^\perp) \geq k + 1$ by Theorem~\ref{thm:minimum_distance_from_check_matrix}. On the other hand, the Singleton bound implies that
+\begin{equation*}
+    d(\mathcal{C}^\perp) \leq n - (n - k) + 1 = k + 1
+\end{equation*}
+so $d(\mathcal{C}^\perp) = k + 1$ and $\mathcal{C}^\perp$ is MDS.
+\end{proof}
+
+From the above proof we see that any set of $k$ columns of the generator matrix of an MDS code are linearly independent, \ie, any set $\mathcal{I} \subseteq [n]$ of size $k$ is an information set. This means that given any $k$ symbols of a codeword in an MDS code $x$ we can decode the message $m$.
+
+\begin{example}
+Notice that the full space code $\F_q^n$ and the repetition code
+\begin{equation*}
+    \mathcal{C} = \{(\lambda, \dots, \lambda) \in \F_q^n \mid \lambda \in \F_q \}
+\end{equation*}
+have parameters $[n, n, 1]$ and $[n, 1, n]$, respectively. Therefore, they are MDS codes as they reach the Singleton bound.
+
+Furthermore, their duals are the zero code $\{0\}$ and the \emph{single parity check code}
+\begin{equation*}
+    \mathcal{C}^\perp = \{ x \in \F_q^n \mid \sum_{i=1}^n x_i = 0 \},
+\end{equation*}
+respectively. These codes must also be MDS with parameters $[n, 0, n + 1]$ and $[n, n - 1, 2]$. Recall that we defined $d(\{0\}) = n + 1$.
+\end{example}
+
+The four codes above are known as trivial MDS codes. Later in the course we will see a family of nontrivial MDS codes.
+
+\begin{theorem}
+Let $\mathcal{C}$ be an $[n, k, d]$ MDS code over $\F_q$. If $k \leq n - 2$, then $k + 1 \leq q$. Furthermore, if $k \geq 2$, then $d \leq q$.
+\end{theorem}
+
+\begin{proof}
+If $k = 1$, then the statement is clear since $q \geq 2$. Therefore, assume that $2 \leq k \leq n - 2$. Let $G$ be the generator matrix of $\mathcal{C}$. Then any $k$ columns of $G$ are linearly independent, so we may assume that $G$ is in standard form $G = (I \mid X)$, where $X$ is a $k \times (n - k)$ matrix. The rows of $G$ have weight $\leq n - k + 1 = d$. As all nonzero codewords in $\mathcal{C}$ have weight $\geq d$ we get that the rows have weight exactly $d = n - k + 1$. Therefore, $X$ contains only nonzero entries.
+
+Multiply the rows of $G$ with suitable nonzero factors such that the column at index $k + 1$ is the all ones vector. This is still a generator matrix for $\mathcal{C}$, say $G'$. Now, assume that there exists two rows of $G'$ with the same coordinate at position $k + 2$. Then, the difference of these two rows has weight $\leq n - k < d$ and is nonzero. As this is a contradiction, we must have that the $k$ rows of $G'$ all have a distinct entry in coordinate $k + 2$. Therefore, $k \leq q - 1$.
+
+Finally, let $k \geq 2$. Then, $\mathcal{C}^\perp$ is an $[n, n - k, k + 1]$ MDS code with dimension $n - k \leq n - 2$, so $d = n - k + 1 \leq q$.
+\end{proof}
+
+% \begin{theorem}
+% All MDS codes over $\F_2$ are trivial.
+% \end{theorem}
+
+% \begin{proof}
+% Let $G$ be the generator matrix of an $[n, k]$ MDS code $\mathcal{C}$. Then any $k$ columns of $G$ are linearly independent, so we may assume that $G$ is in standard form $G = (I \mid X)$, where $X$ is a $k \times (n - k)$ matrix. The rows of $G$ have weight $\leq n - k + 1$. As all nonzero codewords in $\mathcal{C}$ have weight $\geq n - k + 1$ we get that the rows have weight exactly $n - k + 1$. Therefore, $X$ contains only nonzero entries. In particular, over binary $X$ must be the $k \times (n - k)$ matrix containing just $1$'s.
+
+% If $k = n$, then $\mathcal{C} = \F_2^n$ is a trivial MDS code. If $k = 1$, then $\mathcal{C}$ is the repetition code. Thus, assume that $1 < k < n$. If $k = n - 1$, then the generator matrix consists of vectors with even weight, so they are orthogonal to the all ones vector. Therefore, the code is the single parity check code with parameters $[n, n - 1, 2]$. Finally, if $1 < k < n - 1$, then the first two rows of $G$ are $100\cdots01\cdots1$ and $010\cdots01\cdots1$. Their sum is $110\cdots0$ and has weight $2$. As this is also a codeword, $d(\mathcal{C}) \leq 2 < n - k + 1$, so $\mathcal{C}$ is not MDS.
+% \end{proof}
+
+\begin{corollary}
+All MDS codes over $\F_2$ are trivial.
+\end{corollary}
+
+\begin{proof}
+Let $\mathcal{C}$ be an $[n, k, d]$ MDS code over $\F_2$. If $k = n$, then $\mathcal{C} = \F_2^n$, so $\mathcal{C}$ is trivial. Further, if $k = n - 1$, then $\mathcal{C}^\perp$ is a $[n, 1, n]$ MDS code, \ie, the repetition code of length $n$. Thus, $\mathcal{C}$ is the single parity check code. Finally, if $k \leq n - 2$, then $k \leq 1$ by the above theorem. If $k = 1$, then $\mathcal{C}$ is the $[n, 1, n]$ repetition code and if $k = 0$, then $\mathcal{C}$ is the zero code.
+\end{proof}
+
+The above theorem generalizes to a conjecture that there are no nontrivial MDS codes over $\F_q$ that have $n > q + 3$. This conjecture has been proven when $q$ is prime. Therefore, it seems to be the case that it is not possible to construct nontrivial linear MDS codes of arbitrary lengths over a fixed alphabet.
+
+
+% \subsection{Uses of MDS codes}
+
+% A \emph{distributed storage system} is a way of storing data on multiple \emph{nodes}. Let $n$ be the number of nodes and consider an $[n, k]$ MDS code $\mathcal{C}$. Store coordinate $i$ of a codeword $c \in \mathcal{C}$ on the $i$th node of the distributed storage system.
+
+\end{document}
